@@ -5,6 +5,7 @@ export function useCharacters(page: number = 1) {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<CharacterResponse["info"] | null>(null);
 
   useEffect(() => {
     async function fetchCharacters() {
@@ -16,6 +17,7 @@ export function useCharacters(page: number = 1) {
         if (!res.ok) throw new Error("Failed to fetch characters");
         const data: CharacterResponse = await res.json();
         setCharacters(data.results);
+        setInfo(data.info);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -25,5 +27,5 @@ export function useCharacters(page: number = 1) {
     fetchCharacters();
   }, [page]);
 
-  return { characters, loading, error };
+  return { characters, loading, error, info };
 }

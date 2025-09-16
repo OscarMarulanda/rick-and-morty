@@ -1,6 +1,7 @@
 import type { Character } from "../types/rickAndMorty";
 import { useEpisodeList } from "../hooks/useEpisodeList";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface Props {
   character: Character;
@@ -8,16 +9,13 @@ interface Props {
 
 export default function CharacterCard({ character }: Props) {
   const [expanded, setExpanded] = useState(false);
-  const [fetched, setFetched] = useState(false);
+  
 
   const { episodes, loading, error } = useEpisodeList(
-    fetched ? character.episode : [] 
+     character.episode
   );
 
   const handleExpand = () => {
-    if (!expanded && !fetched) {
-      setFetched(true); 
-    }
     setExpanded((prev) => !prev);
   };
 
@@ -66,7 +64,13 @@ export default function CharacterCard({ character }: Props) {
             <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
               {episodes.map((ep) => (
                 <li key={ep.id}>
-                  {ep.episode} — {ep.name}
+                  <Link
+                    to={`/episode/${ep.id}`}
+                    onClick={(e) => e.stopPropagation()} // important: prevent the parent card click
+                    className="text-blue-600 hover:underline"
+                  >
+                    {ep.episode} — {ep.name}
+                  </Link>
                 </li>
               ))}
             </ul>

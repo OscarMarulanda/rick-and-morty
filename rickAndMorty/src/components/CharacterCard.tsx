@@ -9,11 +9,8 @@ interface Props {
 
 export default function CharacterCard({ character }: Props) {
   const [expanded, setExpanded] = useState(false);
-  
 
-  const { episodes, loading, error } = useEpisodeList(
-     character.episode
-  );
+  const { episodes, loading, error } = useEpisodeList(character.episode);
 
   const handleExpand = () => {
     setExpanded((prev) => !prev);
@@ -29,16 +26,25 @@ export default function CharacterCard({ character }: Props) {
         alt={character.name}
         className="w-48 h-48 rounded-full mb-4"
       />
-      <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-        {character.name}
-      </h2>
+      <div className="flex items-center gap-2">
+        <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+          {character.name}
+        </h2>
+        <span
+          className={`transform transition-transform duration-300 ${
+            expanded ? "rotate-180" : "rotate-0"
+          }`}
+        >
+          ▼
+        </span>
+      </div>
       <p className="text-gray-500 dark:text-gray-400 mt-2">
         {character.status} - {character.species}
       </p>
 
       <div
-        className={`overflow-hidden transition-all duration-300 ${
-          expanded ? "max-h-96 mt-4" : "max-h-0"
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          expanded ? "max-h-96 opacity-100 scale-100 mt-4" : "max-h-0 opacity-0 scale-95"
         }`}
       >
         <p className="text-sm text-gray-600 dark:text-gray-300">

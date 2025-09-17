@@ -30,7 +30,7 @@ export default function Home() {
   const handleNext = () => setPage((prev) => (info?.next ? prev + 1 : prev));
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;
-  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
+  
 
   return (
     <section className="bg-white dark:bg-gray-900 py-12 flex justify-center">
@@ -88,6 +88,12 @@ export default function Home() {
               className="px-3 py-2 rounded-lg border dark:bg-gray-800 dark:text-white"
             />
           </div>
+
+           {error && (
+          <p className="text-center mt-6 text-red-500 font-medium">
+            {error}. Try adjusting your search or filters.
+          </p>
+        )}
 
         {/* Top Pagination */}
         <Pagination

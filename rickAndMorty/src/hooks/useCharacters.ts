@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import type { Character, CharacterResponse } from "../types/rickAndMorty";
 
-export function useCharacters(page: number = 1, name: string = "") {
+export function useCharacters(
+  page: number = 1,
+  filters: {
+    name?: string;
+    status?: string;
+    species?: string;
+    gender?: string;
+  } = {}
+) {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -13,7 +21,9 @@ export function useCharacters(page: number = 1, name: string = "") {
         setLoading(true);
         const url = new URL("https://rickandmortyapi.com/api/character");
         url.searchParams.set("page", page.toString());
-        if (name) url.searchParams.set("name", name);
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value) url.searchParams.set(key, value);
+        });
 
         const res = await fetch(url.toString());
         if (!res.ok) throw new Error("Failed to fetch characters");
@@ -30,7 +40,7 @@ export function useCharacters(page: number = 1, name: string = "") {
       }
     }
     fetchCharacters();
-  }, [page, name]);
+  }, [page, filters]);
 
   return { characters, loading, error, info };
 }

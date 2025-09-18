@@ -3,6 +3,7 @@ import CharacterCard from "../components/CharacterCard";
 import Pagination from "../components/Pagination";
 import { useCharacters } from "../hooks/useCharacters";
 import { useDebounce } from "../hooks/useDebounce";
+import FiltersBar from "../components/FiltersBar";
 
 export default function Home() {
   const [page, setPage] = useState(1);
@@ -43,51 +44,30 @@ export default function Home() {
           <p className="text-gray-500 dark:text-gray-400">
             Explore your favorite characters from the Rick and Morty universe.
           </p>
-
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1); // always reset to page 1 on new search
-            }}
-            placeholder="Search by name..."
-            className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring focus:ring-blue-400 w-64"
-          />
         </div>
 
-        <div className="mt-4 flex gap-4 justify-center flex-wrap">
-            <select
-              value={status}
-              onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-              className="px-3 py-2 rounded-lg border dark:bg-gray-800 dark:text-white"
-            >
-              <option value="">All Status</option>
-              <option value="alive">Alive</option>
-              <option value="dead">Dead</option>
-              <option value="unknown">Unknown</option>
-            </select>
-
-            <select
-              value={gender}
-              onChange={(e) => { setGender(e.target.value); setPage(1); }}
-              className="px-3 py-2 rounded-lg border dark:bg-gray-800 dark:text-white"
-            >
-              <option value="">All Genders</option>
-              <option value="female">Female</option>
-              <option value="male">Male</option>
-              <option value="genderless">Genderless</option>
-              <option value="unknown">Unknown</option>
-            </select>
-
-            <input
-              type="text"
-              value={species}
-              onChange={(e) => { setSpecies(e.target.value); setPage(1); }}
-              placeholder="Filter by species"
-              className="px-3 py-2 rounded-lg border dark:bg-gray-800 dark:text-white"
-            />
-          </div>
+        <FiltersBar
+          search={search}
+          onSearchChange={(val) => {
+            setSearch(val);
+            setPage(1);
+          }}
+          status={status}
+          onStatusChange={(val) => {
+            setStatus(val);
+            setPage(1);
+          }}
+          gender={gender}
+          onGenderChange={(val) => {
+            setGender(val);
+            setPage(1);
+          }}
+          species={species}
+          onSpeciesChange={(val) => {
+            setSpecies(val);
+            setPage(1);
+          }}
+        />
 
            {error && (
           <p className="text-center mt-6 text-red-500 font-medium">

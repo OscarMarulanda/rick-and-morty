@@ -72,7 +72,7 @@ export default function CharacterCard({ character }: Props) {
                 <li key={ep.id}>
                   <Link
                     to={`/episode/${ep.id}`}
-                    onClick={(e) => e.stopPropagation()} // important: prevent the parent card click
+                    onClick={(e) => e.stopPropagation()} 
                     className="text-blue-600 hover:underline"
                   >
                     {ep.episode} — {ep.name}

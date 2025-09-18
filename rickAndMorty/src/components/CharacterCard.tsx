@@ -2,6 +2,7 @@ import type { Character } from "../types/rickAndMorty";
 import { useEpisodeList } from "../hooks/useEpisodeList";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useCharacterStore } from "../store/useCharacterStore";
 
 interface Props {
   character: Character;
@@ -12,6 +13,11 @@ export default function CharacterCard({ character }: Props) {
 
   const { episodes, loading, error } = useEpisodeList(character.episode);
 
+  const toggleFavorite = useCharacterStore((state) => state.toggleFavorite);
+  const isFavorite = useCharacterStore((state) =>
+    state.isFavorite(character.id)
+  );
+
   const handleExpand = () => {
     setExpanded((prev) => !prev);
   };
@@ -19,13 +25,26 @@ export default function CharacterCard({ character }: Props) {
   return (
     <div
       onClick={handleExpand}
-      className="bg-gray-50 dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition p-5 flex flex-col items-center text-center"
+      className="relative bg-gray-50 dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition p-5 flex flex-col items-center text-center"
     >
       <img
         src={character.image}
         alt={character.name}
         className="w-48 h-48 rounded-full mb-4"
       />
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation(); // prevent card expand
+          toggleFavorite(character.id);
+
+          const favorites = useCharacterStore.getState().favorites;
+          console.log("Favorites:", favorites);
+        }}
+        className="absolute top-2 right-2 text-2xl"
+      >
+        {isFavorite ? "❤️" : "🤍"}
+      </button>
       <div className="flex items-center gap-2">
         <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
           {character.name}
@@ -44,7 +63,9 @@ export default function CharacterCard({ character }: Props) {
 
       <div
         className={`overflow-hidden transition-all duration-500 ease-in-out ${
-          expanded ? "max-h-96 opacity-100 scale-100 mt-4" : "max-h-0 opacity-0 scale-95"
+          expanded
+            ? "max-h-96 opacity-100 scale-100 mt-4"
+            : "max-h-0 opacity-0 scale-95"
         }`}
       >
         <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -72,7 +93,7 @@ export default function CharacterCard({ character }: Props) {
                 <li key={ep.id}>
                   <Link
                     to={`/episode/${ep.id}`}
-                    onClick={(e) => e.stopPropagation()} 
+                    onClick={(e) => e.stopPropagation()}
                     className="text-blue-600 hover:underline"
                   >
                     {ep.episode} — {ep.name}

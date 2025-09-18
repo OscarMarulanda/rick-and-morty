@@ -1,37 +1,41 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import CharacterCard from "../components/CharacterCard";
 import Pagination from "../components/Pagination";
 import { useCharacters } from "../hooks/useCharacters";
 import { useDebounce } from "../hooks/useDebounce";
 import FiltersBar from "../components/FiltersBar";
+import { useCharacterStore } from "../store/useCharacterStore";
 
 export default function Home() {
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
-  const [species, setSpecies] = useState("");
-  const [gender, setGender] = useState("");
+  const {
+    page,
+    filters,
+    setPage,
+    setSearch,
+    setStatus,
+    setGender,
+    setSpecies,
+  } = useCharacterStore();
 
-  const debouncedSearch = useDebounce(search, 500);
-  const debouncedSpecies = useDebounce(species, 500);
+  const debouncedSearch = useDebounce(filters.search, 500);
+  const debouncedSpecies = useDebounce(filters.species, 500);
 
-   const filters = useMemo(
-  () => ({
-    name: debouncedSearch,
-    status,
-    species: debouncedSpecies,  
-    gender,
-  }),
-  [debouncedSearch, status, debouncedSpecies, gender]
-);
+  const activeFilters = useMemo(
+    () => ({
+      name: debouncedSearch,
+      status: filters.status,
+      species: debouncedSpecies,
+      gender: filters.gender,
+    }),
+    [debouncedSearch, filters.status, debouncedSpecies, filters.gender]
+  );
 
-  const { characters, loading, error, info } = useCharacters(page, filters);
+  const { characters, loading, error, info } = useCharacters(page, activeFilters);
 
-  const handlePrev = () => setPage((prev) => Math.max(prev - 1, 1));
-  const handleNext = () => setPage((prev) => (info?.next ? prev + 1 : prev));
+  const handlePrev = () => setPage(Math.max(page - 1, 1));
+  const handleNext = () => setPage(info?.next ? page + 1 : page);
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;
-  
 
   return (
     <section className="bg-white dark:bg-gray-900 py-12 flex justify-center">
@@ -47,29 +51,17 @@ export default function Home() {
         </div>
 
         <FiltersBar
-          search={search}
-          onSearchChange={(val) => {
-            setSearch(val);
-            setPage(1);
-          }}
-          status={status}
-          onStatusChange={(val) => {
-            setStatus(val);
-            setPage(1);
-          }}
-          gender={gender}
-          onGenderChange={(val) => {
-            setGender(val);
-            setPage(1);
-          }}
-          species={species}
-          onSpeciesChange={(val) => {
-            setSpecies(val);
-            setPage(1);
-          }}
+          search={filters.search}
+          onSearchChange={setSearch}
+          status={filters.status}
+          onStatusChange={setStatus}
+          gender={filters.gender}
+          onGenderChange={setGender}
+          species={filters.species}
+          onSpeciesChange={setSpecies}
         />
 
-           {error && (
+        {error && (
           <p className="text-center mt-6 text-red-500 font-medium">
             {error}. Try adjusting your search or filters.
           </p>
